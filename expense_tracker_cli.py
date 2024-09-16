@@ -75,6 +75,17 @@ def main():
 
         expense_tracker.total_expense(month)
 
+    elif command == 'export':
+        if len(sys.argv) > 4:
+            print("Usage: expense-tracker export --month <month>")
+            return
+
+        month = None
+        if len(sys.argv) == 4:
+            month = int(sys.argv[3])
+
+        expense_tracker.export_expense(month)
+
     else:
         print("Unknown command")
 

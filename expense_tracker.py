@@ -7,7 +7,8 @@ EXPENSE_FILE_PATH = './expenses.json'
 
 
 class Expense:
-    def __init__(self, id: int, description: str, category: Optional[str], amount: int, created_at: datetime, updated_at: datetime):
+    def __init__(self, id: int, description: str, category: Optional[str], amount: int, created_at: datetime,
+                 updated_at: datetime):
         self.id: int = id
         self.description: str = description
         self.category: str = category
@@ -212,7 +213,8 @@ class ExpenseTracker:
         else:
             print('ID\tDate\t\t\t\tDescription\tCategory\tAmount')
             for expense in self.expenses:
-                print(f'{expense.id}\t{expense.created_at}\t{expense.description}\t\t{expense.category}\t\t${expense.amount}')
+                print(
+                    f'{expense.id}\t{expense.created_at}\t{expense.description}\t\t{expense.category}\t\t${expense.amount}')
 
         return None
 
@@ -232,3 +234,24 @@ class ExpenseTracker:
 
         print(f'Total expenses: ${total}')
 
+    def export_expense(self, month: Optional[int]) -> None:
+        """
+            Export the expenses to a CSV file
+        """
+        try:
+            with open('expenses.csv', 'w') as file:
+                file.write('ID,Date,Description,Category,Amount\n')
+                if month:
+                    for expense in self.expenses:
+                        if datetime.fromisoformat(expense.created_at).month == month:
+                            file.write(
+                                f'{expense.id},{expense.created_at},{expense.description},{expense.category},${expense.amount}\n'
+                            )
+                else:
+                    for expense in self.expenses:
+                        file.write(
+                            f'{expense.id},{expense.created_at},{expense.description},{expense.category},${expense.amount}\n'
+                        )
+            print('Expenses exported successfully')
+        except Exception as ex:
+            print('Error: ', ex)
