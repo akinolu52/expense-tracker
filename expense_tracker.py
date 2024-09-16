@@ -1,5 +1,6 @@
 import json
 import os
+import calendar
 from datetime import datetime
 from typing import List, Dict, Any, Union, Optional
 
@@ -208,13 +209,13 @@ class ExpenseTracker:
             for expense in self.expenses:
                 if expense.category and expense.category.lower() == category.lower():
                     print(
-                        f'{expense.id}\t{expense.created_at}\t{expense.description}\t\t{expense.category}\t\t${expense.amount}'
+                        f'{expense.id}\t{datetime.fromisoformat(expense.created_at).strftime("%Y-%m-%d")}\t{expense.description}\t\t{expense.category}\t\t${expense.amount}'
                     )
         else:
             print('ID\tDate\t\t\t\tDescription\tCategory\tAmount')
             for expense in self.expenses:
                 print(
-                    f'{expense.id}\t{expense.created_at}\t{expense.description}\t\t{expense.category}\t\t${expense.amount}')
+                    f'{expense.id}\t{datetime.fromisoformat(expense.created_at).strftime("%Y-%m-%d")}\t{expense.description}\t\t{expense.category}\t\t${expense.amount}')
 
         return None
 
@@ -229,10 +230,11 @@ class ExpenseTracker:
                 expense.amount for expense in self.expenses
                 if datetime.fromisoformat(expense.created_at).month == month
             )
+            print(f'Total expenses for {calendar.month_name[month]}: ${total}')
+
         else:
             total = sum(expense.amount for expense in self.expenses)
-
-        print(f'Total expenses: ${total}')
+            print(f'Total expenses: ${total}')
 
     def export_expense(self, month: Optional[int]) -> None:
         """
@@ -245,13 +247,15 @@ class ExpenseTracker:
                     for expense in self.expenses:
                         if datetime.fromisoformat(expense.created_at).month == month:
                             file.write(
-                                f'{expense.id},{expense.created_at},{expense.description},{expense.category},${expense.amount}\n'
+                                f'{expense.id},{datetime.fromisoformat(expense.created_at).strftime("%Y-%m-%d")},{expense.description},{expense.category},${expense.amount}\n'
                             )
+                    print(f'{calendar.month_name[month]} Expenses exported successfully.')
                 else:
                     for expense in self.expenses:
                         file.write(
-                            f'{expense.id},{expense.created_at},{expense.description},{expense.category},${expense.amount}\n'
+                            f'{expense.id},{datetime.fromisoformat(expense.created_at).strftime("%Y-%m-%d")},{expense.description},{expense.category},${expense.amount}\n'
                         )
-            print('Expenses exported successfully')
+                    print('Expenses exported successfully.')
+
         except Exception as ex:
             print('Error: ', ex)
