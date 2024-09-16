@@ -7,9 +7,10 @@ EXPENSE_FILE_PATH = './expenses.json'
 
 
 class Expense:
-    def __init__(self, id: int, description: str, amount: int, created_at: datetime, updated_at: datetime):
+    def __init__(self, id: int, description: str, category: Optional[str], amount: int, created_at: datetime, updated_at: datetime):
         self.id: int = id
         self.description: str = description
+        self.category: str = category
         self.amount: int = amount
         self.created_at: str = created_at.isoformat()
         self.updated_at: str = updated_at.isoformat()
@@ -18,6 +19,7 @@ class Expense:
         return {
             'id': self.id,
             'description': self.description,
+            'category': self.category,
             'amount': self.amount,
             'created_at': self.created_at,
             'updated_at': self.updated_at,
@@ -28,6 +30,7 @@ class Expense:
         return Expense(
             id=data['id'],
             description=data['description'],
+            category=data['category'],
             amount=data['amount'],
             created_at=datetime.fromisoformat(data['created_at']),
             updated_at=datetime.fromisoformat(data['updated_at'])
@@ -103,9 +106,10 @@ class ExpenseTracker:
         elif amount < 0:
             raise ValueError('Amount must be a positive integer')
 
-    def add_expense(self, description: str, amount: int) -> None:
+    def add_expense(self, description: str, amount: int, category: Optional[str]) -> None:
         """
             Add a new expense to the list of expenses
+            :param category: the category of the expense (optional) used for filter
             :param description: the description of the expense
             :param amount: the amount of the expense
         """
@@ -116,6 +120,7 @@ class ExpenseTracker:
             new_expense = Expense(
                 id=self.get_next_id(),
                 description=description,
+                category=category,
                 amount=amount,
                 created_at=datetime.now(),
                 updated_at=datetime.now()
@@ -188,7 +193,7 @@ class ExpenseTracker:
             print('Error: ', ex)
             return None
 
-    def list_expenses(self) -> None:
+    def list_expenses(self, category: Optional[str]) -> None:
         """
             List all expenses
         """
@@ -196,9 +201,18 @@ class ExpenseTracker:
             print('No expenses found')
             return
 
-        print('ID\tDate\t\t\t\tDescription  Amount')
-        for expense in self.expenses:
-            print(f'{expense.id}\t{expense.created_at}\t{expense.description}\t\t${expense.amount}')
+        if category:
+            print('\nFiltering by category:', category)
+            print('ID\tDate\t\t\t\tDescription\tCategory\tAmount')
+            for expense in self.expenses:
+                if expense.category and expense.category.lower() == category.lower():
+                    print(
+                        f'{expense.id}\t{expense.created_at}\t{expense.description}\t\t{expense.category}\t\t${expense.amount}'
+                    )
+        else:
+            print('ID\tDate\t\t\t\tDescription\tCategory\tAmount')
+            for expense in self.expenses:
+                print(f'{expense.id}\t{expense.created_at}\t{expense.description}\t\t{expense.category}\t\t${expense.amount}')
 
         return None
 

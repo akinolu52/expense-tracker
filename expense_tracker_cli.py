@@ -12,7 +12,11 @@ def main():
     expense_tracker = ExpenseTracker()
 
     if command == 'add':
-        if len(sys.argv) != 6:
+        if 6 < len(sys.argv) < 8:
+            print("Usage: expense-tracker add --description <description> --amount <amount> --category <category>")
+            return
+
+        if len(sys.argv) < 7:
             print("Usage: expense-tracker add --description <description> --amount <amount>")
             return
 
@@ -23,7 +27,12 @@ def main():
             return
 
         amount = int(sys.argv[5])
-        expense_tracker.add_expense(description, amount)
+        category = None
+
+        if len(sys.argv) == 8:
+            category = sys.argv[7]
+
+        expense_tracker.add_expense(description, amount, category)
 
     elif command == 'update':
         if len(sys.argv) != 7:
@@ -45,7 +54,15 @@ def main():
         expense_tracker.delete_expense(id)
 
     elif command == 'list':
-        expense_tracker.list_expenses()
+        if 2 < len(sys.argv) != 4:
+            print("Usage: expense-tracker list --filter <filter>")
+            return
+
+        category = None
+        if len(sys.argv) == 4:
+            category = sys.argv[3]
+
+        expense_tracker.list_expenses(category)
 
     elif command == 'summary':
         if len(sys.argv) > 4:
